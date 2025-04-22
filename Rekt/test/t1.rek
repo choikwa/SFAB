@@ -1,0 +1,6 @@
+int f1(int a, float b, char c, [] d, () e, {} f)
+{
+  int a = 0;
+  float b = 1.0;
+
+}

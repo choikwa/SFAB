@@ -1,0 +1,18 @@
+int wc = 0;
+int nl = 0;
+int len = 0;
+[] text = read(file, 1000);
+
+for {char a | text}
+{
+  if (a == '\n')
+  {
+    wc = wc + 1;
+    nl = nl + 1;
+  }
+  if (a == ' ' || a == '\t')
+  {
+    wc = wc + 1;
+  }
+}
+

@@ -1,0 +1,22 @@
+[] d = [];
+[] e = [1];
+[] f = [1, 2];
+[] a = [1 + 2, 3, 4.4];
+[] s = d + e + f + a + [1/2, 1.2, 1*2, "1-2"] +
+  [[[[[[[[[[[[[[1]]]]],1]]]]]]]]];
+[] s1 = [1];
+
+# parm is intentionally simple so u dont end up with insane typing ie [int,{float:[char]},char]
+# top level type only for parm decl. programmer should keep track of actual type
+int a([] f)
+{
+  {} foo = {"d": 123, 
+            123: ["f", 12], 
+            [123, 343]: 
+              {[1]:"121a"}};
+  str = "foofoofoo";
+}
+
+@[] taa = @[1,2,3,4];
+
+$[] setset = $[6.9, 7];

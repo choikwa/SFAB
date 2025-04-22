@@ -1,0 +1,9 @@
+
+int a(int b, int c)
+{
+  return b + 2 + c;
+}
+
+int d = a(3, 4);
+
+float e = 1.233423 + 2;

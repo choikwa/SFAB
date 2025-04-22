@@ -1,0 +1,4 @@
+{
+  "_LIBRARY": ["Parser"],
+  "Parser": ["*.cpp"]
+}

@@ -1,0 +1,60 @@
+int aa = 123;
+int func(int z, float x, [] c, () v)
+{
+  int a = 0;
+  float b = 1.0;
+  [] c = 'c' + "dasdf" - "df";  #"casf"  - single line comment
+
+  [] d = [1, 2.0, '3', "4", [5,'a'], (6), {7:8}];
+  # not sure if float key type is desirable
+
+  e = {1:a, 2.0:b, 'a':c , {x|'asdf'}:a };
+
+  return int( e[ d[5][1] ] )
+}
+
+float b()
+{
+  if (cond)
+  {
+
+  }
+  else
+  {
+
+  }
+
+  switch (int state)
+  {
+  1,2,3:  # run this if 1,2,3
+  2,3:  # run this if 2,3
+  3:  # only run for 3
+  isReal: # function too. same as int isReal(state), but test is interpreted separately
+  isImag:
+  {x|1<x<4, isReal}: #math
+  none: # runs if none of above ran
+  all: # run regardless
+  }
+
+  switch (str s)
+  {
+  {x|'asdfa'}:
+    break;
+  }
+
+  #loops
+  for {char x|'asdfa'} #type inferred
+  {
+    print x
+  }
+
+  for {x|[1, 2.0, 'asdf']}
+  {
+    
+  }
+
+  for {x|x=1,x<10,x=x+1}  # {x|1<=x<10, int} equivalent?
+  {
+
+  }
+}

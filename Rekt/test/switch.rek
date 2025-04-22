@@ -1,0 +1,19 @@
+int in = os.sys.read();
+#[] arr = 
+#  [1..4]
+print(arr[0]);
+for{int x | 1<x, x<10}
+{
+  do();
+}
+switch(in)
+{
+1<in: do();
+100: do();
+none: nothing();
+all: rest();
+}
+while(1)
+{
+  fail();
+}

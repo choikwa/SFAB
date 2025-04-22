@@ -1,0 +1,4 @@
+for(int x, int y, int c | x<A.row, y<B.col, c<A.col)
+{
+  C[x][y] = A[x][c] * B[c][y];
+}

@@ -1,0 +1,23 @@
+int func()
+{
+  int test(int a, int b)
+  {
+    if(a < 1 < b)
+    {
+      int wow_i_can_do_this()
+      {
+        return 123123;
+      }
+      return wow_i_can_do_this();
+    }
+    return 0;
+  }
+  int a(){}
+  int func1()
+  {
+    int t = test(1, 2);
+    int f = test(3, 4);
+    return t + f;
+  }
+  return 1;
+}

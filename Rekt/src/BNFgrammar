@@ -1,0 +1,74 @@
+  #Rekt grammar in BNF form
+
+program: stmts                 #program is series of statements
+stmts: stmt | stmts
+stmt: func    |                #things that a statement can be
+      if      |
+      for     |
+      while   |
+      switch  |
+      overload |
+      call ';' |
+      decl ';' |
+      decl '=' exp ';' |
+      iden '=' exp ';' |
+      exp '=' exp ';' |
+      'return' exp ';'
+      
+func: decl args block                #a function
+type: 'int' | 'float' | 'char' |     #scalar types or containers
+      '[]' | '@[]' | '$[]' | '{}'            #list, tuple, set, dict
+parms: '(' <null>|(decl)(',' decl)* ')'      #args are enclosed in parentheses
+decl: type iden
+block: '{' (stmt)* '}'         #block is just series of statements guarded by scope
+
+if: 'if' '(' exp ')' (stmt | block) (elif | else)?
+else: 'else' if |
+      'else' (stmt | block)
+
+for: 'for' iterator block
+iterator: '(' decl(',' decl)* '|' (exp(',' exp)* | iterable) ')'
+iterable: iden
+
+while: 'while' '(' exp ')' block
+      
+switch: 'switch' '(' exp ')'
+        '{'
+           ( exp ':' (stmt)* |
+             'all' ':' (stmt)* |
+             'none' ':' (stmt)* )+
+        '}'
+
+call: iden '(' <null>|(exp)(',' exp)* ')'
+exp: '(' exp ')' |       # parenthesis exp
+     '[' <null>|(exp)(',' exp)* ']'    |                   #unnamed list exp
+     '@[' <null>|(exp)(',' exp)* ']'   |                   #unnamed tuple exp
+     '$[' <null>|(exp)(',' exp)* ']'   |                   #unnamed set exp
+     '{' <null>|(exp ':' exp)(',' (exp ':' exp))* '}' |    #unnamed dict exp
+     (call|iden) '.' exp |          #member access
+     (call|iden) ('[' exp ']')* |   #multi-dim array
+     Number | exp binop exp | unop exp
+binop: '+’ | '*’ | '/’ | '^’ | '%’ | '..’ | 
+       '<’ | '<=’ | '>’ | '>=’ | '==’ | '!=' |
+       '&' | '&&' | '|' | '||'
+unop:  '!' | '~'
+minus: '-'
+anyop: [^0-9]+
+
+overload: type 'overload' '(' type (anyop|(anyop type)+) ')' block)  #overload operator(s)
+
+=== expression operator precedence ===
+(), [], .
+unary(-), !, ~
+*, /, %
++, -
+<, <=, >, >=, ==, !=
+&
+|
+^
+&&
+||
+=
+
+
+
