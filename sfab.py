@@ -59,7 +59,7 @@ def popd():
     print("Empty dir_stack!")
 
 def getcurpath():
-  return "/".join(dir_stack)
+  return os.path.abspath("/".join(dir_stack))
 
 
 def keyword(k):
@@ -72,6 +72,7 @@ forest = [[getcurpath(), mydeptree]]
 # basic, include all seen directories for compilation
 include_dirs = "-I" + getcurpath()
 
+seenpath = [getcurpath()]
 # pathtree = [path, deptree]
 def recurse_dir(pathtree):
   global include_dirs
@@ -80,15 +81,26 @@ def recurse_dir(pathtree):
     if not keyword(k):
       for e in v:
         if os.path.isdir(e):
-          pushd(e)
-          ss = readSFAB()
-          dt = ast.literal_eval(ss)
-          expand_wildcards(dt)
-          new_pathtree = [getcurpath(), dt]
-          include_dirs += " -I" + getcurpath()
-          forest.insert(0, new_pathtree)
-          recurse_dir(new_pathtree)
-          popd()
+          newdir = os.path.abspath(getcurpath() + "/" + e)
+          if newdir in seenpath:
+            # move tree to front in forest
+            seenidx = -1
+            for idx, tree in enumerate(forest):
+              if newdir == tree[0]:
+                seenidx = idx
+            if seenidx != -1:
+              forest.insert(0, forest.pop(seenidx))
+          else:
+            pushd(e)
+            seenpath.append(newdir)
+            ss = readSFAB()
+            dt = ast.literal_eval(ss)
+            expand_wildcards(dt)
+            new_pathtree = [getcurpath(), dt]
+            include_dirs += " -I" + getcurpath()
+            forest.insert(0, new_pathtree)
+            recurse_dir(new_pathtree)
+            popd()
 recurse_dir(forest[0])
 
 print("forest:")
