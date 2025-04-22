@@ -1,4 +1,4 @@
 {
   "_LIBRARY": ["Lexer"],
-  "Lexer": ["*.cpp", "Lexeme"]
+  "Lexer": ["Lexeme", "*.cpp"]
 }

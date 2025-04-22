@@ -1,5 +1,5 @@
 
 {
   "_BINARY": ["rekt"],
-  "rekt": ["*.cpp", "Lexer", "Parser", "CodeGen"],
+  "rekt": ["Lexer", "Parser", "CodeGen", "*.cpp"],
 }

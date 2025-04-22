@@ -1,6 +1,5 @@
 {
   "_LIBRARY": ["Lexeme"],
-  "Lexeme": ["*.cpp"],
-  "*.cpp": ["idToNameMap.txt", "Keywords.txt"],
-    "idToNameMap.txt": ["Lexemes.txt", "genTokenNameMap.py"],
+  "Lexeme": ["idToNameMap.txt", "Keywords.txt", "*.cpp"],
+  "idToNameMap.txt": ["Lexemes.txt", "genTokenNameMap.py"],
 }

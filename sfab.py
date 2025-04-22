@@ -1,6 +1,12 @@
 import glob
 import ast
 import os
+import sys
+
+clean = False
+if len(sys.argv) > 1:
+  if sys.argv[1] == "clean":
+    clean = True
 
 def readSFAB():
   ss = ""
@@ -61,7 +67,7 @@ def keyword(k):
 
 # iterate directories?
 forest = [[getcurpath(), mydeptree]]
-print("Recursively iterate subdirs")
+#print("Recursively iterate subdirs")
 
 # basic, include all seen directories for compilation
 include_dirs = "-I" + getcurpath()
@@ -94,6 +100,8 @@ cmds = []
 compiler = "g++"
 compiler_flags = "-O2 -g -std=c++17"
 libs = []
+gobjs = []
+binary = ""
 
 # path = str
 # k = key
@@ -109,10 +117,12 @@ def recurse_tree(path, k, tree):
       cmd = compiler + " " + compiler_flags + " " + include_dirs + " -c -o " \
         + e[:-4] + ".o " + e
       objs.append(path + "/" + e[:-4] + ".o")
+      gobjs.append(path + "/" + e[:-4] + ".o")
       cmds.append([path, cmd])
     elif e[-3:] == ".py":
       cmd = "python3 " + e
       cmds.append([path, cmd])
+      gobjs.append(path + "/" + k)  # bookkeep generated .txt for removal
 
 for pt in forest:
   p,t = pt
@@ -127,8 +137,9 @@ for pt in forest:
     exit()
   recurse_tree(p, k, t)
   if k == "_BINARY":
+    binary = t[k][0]
     cmd = compiler + " " + compiler_flags + " " + " ".join(objs) + " " + " ".join(libs) \
-      + " -o " + t[k][0]
+      + " -o " + binary
     cmds.append([p, cmd])
   elif k == "_LIBRARY":
     lib = "lib" + t[k][0] + ".a"
@@ -139,11 +150,24 @@ for pt in forest:
     libs.append(p + "/" + lib)
     
 
-print("----------cmds----------")
-for pathcmd in cmds:
-  path, cmd = pathcmd
-  print(cmd)
-  pushd(path)
-  os.system(cmd)
-  popd()
+#print("----------cmds----------")
+if clean:
+  print("rm " + binary)
+  os.system("rm " + binary)
+  for lib in libs:
+    print("rm " + lib)
+    os.system("rm " + lib)
+  for obj in gobjs:
+    print("rm " + obj)
+    os.system("rm " + obj)
+else:
+  for pathcmd in cmds:
+    path, cmd = pathcmd
+    print(cmd)
+    pushd(path)
+    rc = os.system(cmd)
+    popd()
+    if rc != 0:
+      print("Failed to compile cmd: " + cmd)
+      exit()
 

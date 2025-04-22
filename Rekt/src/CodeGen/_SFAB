@@ -1,4 +1,4 @@
 {
   "_LIBRARY": ["CodeGen"],
-  "CodeGen": ["*.cpp"]
+  "CodeGen": ["../Lexer/Lexeme", "*.cpp"]
 }
