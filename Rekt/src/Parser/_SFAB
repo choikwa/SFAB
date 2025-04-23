@@ -1,4 +1,5 @@
 {
   "_LIBRARY": ["Parser"],
-  "Parser": ["../Lexer/Lexeme", "*.cpp"]
+  "Parser": ["*.cpp"],
+  "*.cpp": ["../Lexer/Lexeme"]
 }
