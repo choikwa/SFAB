@@ -137,7 +137,7 @@ def has_filetype(name):
 
 # nodes = [[path, filename], ..]
 nodes = []
-# dgraph = [[1,2], [3,4], ..] means 0th node has edge from [1st, 2nd] node, etc.
+# dgraph = [[1,2], [3,4], ..] means 0th node has incoming edge from [1st, 2nd] node, etc.
 dgraph = [[]]
 def gen_dgraph(forest):
   global nodes
