@@ -6,12 +6,16 @@ import os
 import sys
 
 clean = False
-verbose = False
+verbose = True
+dryrun = False
+
 if len(sys.argv) > 1:
   if sys.argv[1] == "clean":
     clean = True
   elif sys.argv[1] == "verbose":
     verbose = True
+  elif sys.argv[1] == "dry":
+    dryrun = True
 
 cmds = []
 compiler = "clang++"
@@ -82,11 +86,9 @@ def keyword(k):
 
 # iterate directories?
 forest = [[getcurpath(), mydeptree]]
-#print("Recursively iterate subdirs")
-
+# Recursively iterate subdirs
 # basic, include all seen directories for compilation
 include_dirs = "-I" + getcurpath()
-
 seenpath = [getcurpath()]
 # pathtree = [path, deptree]
 def recurse_dir(pathtree):
@@ -122,6 +124,78 @@ if verbose:
   print("forest:")
   for tree in forest:
     print(str(tree))
+
+# Generate dgraph from forest of deptrees
+# we do this in several steps.
+# - enumerate list of nodes from forest
+# - create digraph from node indices
+# - associate each node to cmd later
+def static_lib_name(name):
+  return "lib" + name + ".a"
+def has_filetype(name):
+  return name.find('.') != -1
+
+# nodes = [[path, filename], ..]
+nodes = []
+# dgraph = [[1,2], [3,4], ..] means 0th node has edge from [1st, 2nd] node, etc.
+dgraph = [[]]
+def gen_dgraph(forest):
+  global nodes
+
+  # k = filename
+  def find_idx(nodes, path, k):
+    for i,n in enumerate(nodes):
+      if n[0] == path and n[1] == k:
+        return i
+    print("Could not find idx for: " + k)
+
+  # enumerate list of nodes
+  for pt in forest:
+    path, tree = pt
+    for k,v in tree.items():
+      for e in v:
+        if os.path.isdir(path + "/" + e):
+          continue
+        if k == "_LIBRARY":
+          e = static_lib_name(e)
+        nodes.append([path, e])
+  print("enumerated node list:")
+  for i,n in enumerate(nodes):
+    print(str(i) + ": " + str(n))
+
+  for i in range(len(nodes)):
+    dgraph.append([])
+  for pt in forest:
+    path, tree = pt
+    is_library = True
+    for k,v in tree.items():
+      for e in v:
+        if k == "_BINARY" or has_filetype(k):
+          is_library = False
+        if k == "_LIBRARY" or k == "_BINARY":
+          continue
+
+        pidx = -1  # p -> q
+        qidx = -1
+        #print("Finding idx for (path, k, e): " + path + ", " + k + ", " + e)
+        if os.path.isdir(path + "/" + e):
+          newe = e[e.rfind("/")+1:]
+          pidx = find_idx(nodes, os.path.abspath(path + "/" + e), static_lib_name(newe))
+        else:
+          pidx = find_idx(nodes, path, e)
+
+        newk = k
+        if is_library:
+          newk = static_lib_name(k)
+        qidx = find_idx(nodes, path, newk)
+
+        #print("Inserting edge : " + str(pidx) + "->" + str(qidx))
+        dgraph[qidx].append(pidx)
+  return dgraph
+gen_dgraph(forest)
+
+for i,d in enumerate(dgraph):
+  print(str(i) + ": " + str(d))
 
 # Generate commands
 # path = str
@@ -185,10 +259,19 @@ else:
   for pathcmd in cmds:
     path, cmd = pathcmd
     print(cmd)
-    pushd(path)
-    rc = os.system(cmd)
-    popd()
-    if rc != 0:
-      print("Failed to compile cmd: " + cmd)
-      exit()
+    if not dryrun:
+      pushd(path)
+      rc = os.system(cmd)
+      popd()
+      if rc != 0:
+        print("Failed to compile cmd: " + cmd)
+        exit()
+
+# todo: parallel processing
+# - construct dependence graph
+# - topological sort from dependence graph
+# - determine parallel regions by forming groups that have no incoming edges, 
+#     then removing those nodes to reveal next set
+# - critical path
+# - apply resource constraints
 
