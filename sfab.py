@@ -1,15 +1,30 @@
+#!/usr/bin/env python3
+
 import glob
 import ast
 import os
 import sys
 
 clean = False
+verbose = False
 if len(sys.argv) > 1:
   if sys.argv[1] == "clean":
     clean = True
+  elif sys.argv[1] == "verbose":
+    verbose = True
+
+cmds = []
+compiler = "clang++"
+compiler_flags = "-O2 -g -std=c++20 -w"
+libs = []
+gobjs = []      # obj list for bookkeeping
+binary = ""
 
 def readSFAB():
   ss = ""
+  if not os.path.exists("_SFAB"):
+    print("_SFAB doesn't exist")
+    exit()
   with open("_SFAB") as fin:
     ss = fin.read()
   return ss
@@ -103,18 +118,12 @@ def recurse_dir(pathtree):
             popd()
 recurse_dir(forest[0])
 
-print("forest:")
-for tree in forest:
-  print(str(tree))
+if verbose:
+  print("forest:")
+  for tree in forest:
+    print(str(tree))
 
 # Generate commands
-cmds = []
-compiler = "g++"
-compiler_flags = "-O2 -g -std=c++17"
-libs = []
-gobjs = []
-binary = ""
-
 # path = str
 # k = key
 # tree = dict
